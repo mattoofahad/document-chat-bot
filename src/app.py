@@ -3,53 +3,13 @@
 import openai
 import streamlit as st
 from openai import OpenAI
+from .utils.utils import initiate_streamlit, check_openai_api_key, reset_history, get_pdf_text, discord_hook
+discord_hook("Document Chat Bot initiated")
 
-
-def return_true():
+def myapp():
     """_summary_"""
-    return True
-
-
-def reset_history():
-    """_summary_"""
-    st.session_state.messages = []
-
-
-def check_openai_api_key():
-    """_summary_"""
-    try:
-        client = OpenAI(api_key=st.session_state.openai_api_key)
-        try:
-            client.models.list()
-        except openai.AuthenticationError as error:
-            with st.chat_message("assistant"):
-                st.error(str(error))
-            return False
-        return True
-    except Exception as error:
-        with st.chat_message("assistant"):
-            st.error(str(error))
-        return False
-
-
-def main():
-    """_summary_"""
-    st.set_page_config(
-        page_title="Test", layout="centered", initial_sidebar_state="auto"
-    )
+    initiate_streamlit()
     st.title("Simple Chat Bot")
-
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    if "openai_model" not in st.session_state:
-        st.session_state["openai_model"] = "gpt-3.5-turbo"
-
-    if "openai_api_key" not in st.session_state:
-        st.session_state["openai_api_key"] = None
-
-    if "openai_maxtokens" not in st.session_state:
-        st.session_state["openai_maxtokens"] = 50
 
     if st.session_state.openai_api_key is not None:
         if check_openai_api_key():
@@ -82,14 +42,13 @@ def main():
             reset_history()
 
     with st.sidebar:
-        st.text_input(
+        st.session_state.openai_api_key = st.text_input(
             label="OpenAI API key",
             value="***",
-            key="openai_api_key",
             help="This will not be saved or stored.",
             type="password",
         )
-
+        # st.sidebar.write("---")
         st.selectbox(
             "Select the GPT model",
             ("gpt-3.5-turbo", "gpt-4-turbo-preview"),
@@ -97,8 +56,13 @@ def main():
         st.slider(
             "Max Tokens", min_value=20, max_value=80, step=10, key="openai_maxtokens"
         )
+        st.sidebar.write("---")
+        uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
+        if uploaded_file:
+            st.session_state.pdf_text = get_pdf_text(uploaded_file)
+            print(st.session_state.pdf_text)
+        st.sidebar.write("---")
         st.button(label="Reset Chat", on_click=reset_history)
 
-
 if __name__ == "__main__":
-    main()
+    myapp()

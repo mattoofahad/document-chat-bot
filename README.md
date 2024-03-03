@@ -1,5 +1,5 @@
 ---
-title: This is a simple chat bot using openAI GPT models.
+title: This is a document chat bot.
 colorFrom: red
 colorTo: green
 emoji: 👾
@@ -10,7 +10,7 @@ pinned: false
 ---
 
 # simple-chat-bot
-This is a simple chat bot using openAI GPT models.
+This is a document chat bot.
 
 ## Create env
 
@@ -33,7 +33,7 @@ pip install -r requirements.txt
 ## Run the application
 
 ```
-streamlit run src\app.py
+streamlit run app.py
 ```
 
 
